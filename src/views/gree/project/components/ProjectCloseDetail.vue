@@ -3,7 +3,7 @@
     <el-form :model="value" :rules="rules" ref="productCloseForm" label-width="120px" style="width: 600px" size="small">
       <el-form-item label="完结人：" prop="projectCloseName">
         <el-select
-          v-model="value.projectCloseName"
+          v-model="value.projectCloseInfo.projectCloseName"
           @change="handleBrandChange"
           placeholder="请选择完结人">
           <el-option
@@ -16,22 +16,23 @@
       </el-form-item>
       <el-form-item label="是否完结：">
         <el-switch
-          v-model="value.projectIsClose"
+          v-model="value.projectCloseInfo.projectIsClose"
           :active-value="1"
           :inactive-value="0">
         </el-switch>
       </el-form-item>
       <el-form-item label="完结状态">
-        <el-radio-group v-model="value.closeStatus">
-          <el-radio label="正常"></el-radio>
-          <el-radio label="延期"></el-radio>
-          <el-radio label="异常"></el-radio>
+        <el-radio-group v-model="value.projectCloseInfo.closeStatus">
+          <el-radio label="未完结"/>
+          <el-radio label="正常完结" />
+          <el-radio label="延期完结" />
+          <el-radio label="异常" />
         </el-radio-group>
       </el-form-item>
       <el-form-item label="项目完成时间：">
         <el-date-picker
           class="input-width"
-          v-model="value.finishTime"
+          v-model="value.projectCloseInfo.finishTime"
           value-format="yyyy-MM-dd"
           type="date"
           placeholder="请选择时间">
@@ -76,51 +77,37 @@
     },
     computed:{
       //商品的编号
-      productId(){
-        return this.value.id;
-      }
+      // productId(){
+      //   return this.value.id;
+      // }
     },
     watch: {
-      productId:function(newValue){
-        if(!this.isEdit)return;
-        if(this.hasEditCreated)return;
-        if(newValue===undefined||newValue==null||newValue===0)return;
-        this.handleEditCreated();
-      },
+      // productId:function(newValue){
+      //   if(!this.isEdit)return;
+      //   if(this.hasEditCreated)return;
+      //   if(newValue===undefined||newValue==null||newValue===0)return;
+      //   this.handleEditCreated();
+      // },
       selectProductCateValue: function (newValue) {
         if (newValue != null && newValue.length === 2) {
-          this.value.productCategoryId = newValue[1];
-          this.value.productCategoryName= this.getCateNameById(this.value.productCategoryId);
+          this.value.projectCloseInfo.productCategoryId = newValue[1];
+          this.value.projectCloseInfo.productCategoryName= this.getCateNameById(this.value.projectCloseInfo.productCategoryId);
         } else {
-          this.value.productCategoryId = null;
-          this.value.productCategoryName=null;
+          this.value.projectCloseInfo.productCategoryId = null;
+          this.value.projectCloseInfo.productCategoryName=null;
         }
       }
     },
     methods: {
       //处理编辑逻辑
       handleEditCreated(){
-        if(this.value.productCategoryId!=null){
+        if(this.value.projectCloseInfo.productCategoryId!=null){
           this.selectProductCateValue.push(this.value.cateParentId);
-          this.selectProductCateValue.push(this.value.productCategoryId);
+          this.selectProductCateValue.push(this.value.projectCloseInfo.productCategoryId);
         }
         this.hasEditCreated=true;
       },
-      getProductCateList() {
-        fetchListWithChildren().then(response => {
-          let list = response.data;
-          this.productCateOptions = [];
-          for (let i = 0; i < list.length; i++) {
-            let children = [];
-            if (list[i].children != null && list[i].children.length > 0) {
-              for (let j = 0; j < list[i].children.length; j++) {
-                children.push({label: list[i].children[j].name, value: list[i].children[j].id});
-              }
-            }
-            this.productCateOptions.push({label: list[i].name, value: list[i].id, children: children});
-          }
-        });
-      },
+
       getBrandList() {
         fetchBrandList({pageNum: 1, pageSize: 100}).then(response => {
           this.brandOptions = [];
@@ -143,25 +130,10 @@
         return name;
       },
       handlePrev() {
-        console.log("ssssss");
         this.$emit('prevStep')
       },
       handleFinishCommit(){
         this.$emit('finishCommit',this.isEdit);
-      },
-      handleNext(formName){
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            this.$emit('nextStep');
-          } else {
-            this.$message({
-              message: '验证失败',
-              type: 'error',
-              duration:1000
-            });
-            return false;
-          }
-        });
       },
       handleBrandChange(val) {
         let brandName = '';

@@ -1,10 +1,9 @@
 <template> 
   <el-card class="form-container" shadow="never">
     <el-steps :active="active" finish-status="success" align-center>
-      <el-step title="填写项目信息"></el-step>
-      <el-step title="填写项目计划"></el-step>
-      <el-step title="填写完结信息"></el-step>
-<!--      <el-step title="选择商品关联"></el-step>-->
+      <el-step title="填写项目信息" />
+      <el-step title="填写项目计划" />
+      <el-step title="填写完结信息" />
     </el-steps>
     <project-info-detail
       v-show="showStatus[0]"
@@ -36,7 +35,7 @@
   import {createProduct,getProduct,updateProduct} from '@/api/product';
 
   const defaultProductParam = {
-
+    //项目信息
     projectName: '',//项目名称
     projectCataId:'',//项目分类ID
     projectCataName:'',//项目分类名字
@@ -44,15 +43,26 @@
     joinMan: '', //项目成员
     important: 0, //项目重要程度
     projectDesc: '', //项目介绍
+    //计划信息
+    planList: [],
+    planName: '',//计划名称
+    planOperate: '',//操作人
+    planFinishTime: '',//计划完成时间
+    planDoc: '',//计划文档
+    planDesc: '',//计划详情,
 
+    projectCloseInfo:{
+      projectCloseName:'',//完结人
+      projectIsClose:'',//是否完结
+      closeStatus:'', //完结状态
+      finishTime: '', //项目完成时间
+    },
+
+    //项目完结信息
     projectCloseName:'',//完结人
     projectIsClose:'',//是否完结
     closeStatus:'', //完结状态
     finishTime: '', //项目完成时间
-    planName: '',//计划名称
-    planDesc: '',//计划详情,
-    planFinishTime: '',//计划完成时间
-    planDoc: ''//计划完成时间
   };
   export default {
     name: 'ProjectDetail',

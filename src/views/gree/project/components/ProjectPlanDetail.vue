@@ -4,19 +4,19 @@
         <el-button style="float: right; padding: 3px 0" type="text" @click="addPlan">添加计划</el-button>
       </div>
       <el-form :model="value" ref="productPlanForm" label-width="120px" style="width: 820px" size="small">
-        <div v-for="o in planList" :key="o.id" >
+        <div v-for="o in value.planList" :key="o.sortId" >
           <el-tag>
-            计划【{{o.id}}】
+            计划【{{o.sortId}}】
           </el-tag>
           <div style="margin-bottom: 10px;">
             <el-form-item label="计划名称：">
-              <el-input v-model="o.planName"></el-input>
+              <el-input v-model="o.planName" />
             </el-form-item>
             <el-form-item label="操作人：" prop="planOperate">
               <el-select
                 v-model="o.planOperate"
                 @change="handleBrandChange"
-                placeholder="请选择成员">
+                placeholder="请选择操作人">
                 <el-option
                   v-for="item in brandOptions"
                   :key="item.value"
@@ -41,15 +41,15 @@
                 v-model="o.planDoc"
                 action="https://jsonplaceholder.typicode.com/posts/"
                 multiple>
-                <i class="el-icon-upload"></i>
+                <i class="el-icon-upload" />
                 <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
                 <!--          <div class="el-upload__tip" slot="tip">只能上传jpg/png/pdf/word/excel/md文件，且不超过10m</div>-->
               </el-upload>
             </el-form-item>
             <el-form-item label="计划详情：">
-                <tinymce :width="595" :height="300" v-model="o.planDesc"></tinymce>
+                <tinymce :width="595" :height="300" v-model="o.planDesc" />
             </el-form-item>
-            <el-divider></el-divider>
+            <el-divider />
           </div>
         </div>
 
@@ -84,8 +84,7 @@
           }
         },
         brandOptions: [],
-        activeHtmlName: 'pc',
-        planList:[]
+        // planList:[]
       }
     },
     created() {
@@ -103,68 +102,7 @@
       }
       this.getBrandList();
     },
-    computed: {
-      //选中的服务保证
-      selectProductPics:{
-        get:function () {
-          let pics=[];
-          if(this.value.pic===undefined||this.value.pic==null||this.value.pic===''){
-            return pics;
-          }
-          pics.push(this.value.pic);
-          if(this.value.albumPics===undefined||this.value.albumPics==null||this.value.albumPics===''){
-            return pics;
-          }
-          let albumPics = this.value.albumPics.split(',');
-          for(let i=0;i<albumPics.length;i++){
-            pics.push(albumPics[i]);
-          }
-          return pics;
-        },
-        set:function (newValue) {
-          if (newValue == null || newValue.length === 0) {
-            this.value.pic = null;
-            this.value.albumPics = null;
-          } else {
-            this.value.pic = newValue[0];
-            this.value.albumPics = '';
-            if (newValue.length > 1) {
-              for (let i = 1; i < newValue.length; i++) {
-                this.value.albumPics += newValue[i];
-                if (i !== newValue.length - 1) {
-                  this.value.albumPics += ',';
-                }
-              }
-            }
-          }
-        }
-      },
-      selectServiceList: {
-        get() {
-          let list = [];
-          if (this.value.serviceIds === undefined || this.value.serviceIds == null || this.value.serviceIds === '') return list;
-          let ids = this.value.serviceIds.split(',');
-          for (let i = 0; i < ids.length; i++) {
-            list.push(Number(ids[i]));
-          }
-          return list;
-        },
-        set(newValue) {
-          let serviceIds = '';
-          if (newValue != null && newValue.length > 0) {
-            for (let i = 0; i < newValue.length; i++) {
-              serviceIds += newValue[i] + ',';
-            }
-            if (serviceIds.endsWith(',')) {
-              serviceIds = serviceIds.substr(0, serviceIds.length - 1)
-            }
-            this.value.serviceIds = serviceIds;
-          } else {
-            this.value.serviceIds = null;
-          }
-        }
-      }
-    },
+    computed: {},
     methods: {
       getBrandList() {
         fetchBrandList({pageNum: 1, pageSize: 100}).then(response => {
@@ -176,17 +114,16 @@
         });
       },
       addPlan(){
-        let length = this.planList.length;
+        let length = this.value.planList.length;
         let planObj = {
-          id: length+1,
+          sortId: length+1,
           planName: "",
           planDesc: "",
           planDoc: "",
           planFinishTime: "",
           planOperate:""
         };
-        this.planList.push(planObj);
-        console.log(planObj)
+        this.value.planList.push(planObj);
       },
       handleBrandChange(val) {
         let brandName = '';
@@ -198,67 +135,7 @@
         }
         this.value.brandName = brandName;
       },
-      handleEditCreated() {
-        let ids = this.value.serviceIds.split(',');
-        console.log('handleEditCreated', ids);
-        for (let i = 0; i < ids.length; i++) {
-          this.selectServiceList.push(Number(ids[i]));
-        }
-      },
-      handleRemoveProductLadder(index, row) {
-        let productLadderList = this.value.productLadderList;
-        if (productLadderList.length === 1) {
-          productLadderList.pop();
-          productLadderList.push({
-            count: 0,
-            discount: 0,
-            price: 0
-          })
-        } else {
-          productLadderList.splice(index, 1);
-        }
-      },
-      handleAddProductLadder(index, row) {
-        let productLadderList = this.value.productLadderList;
-        if (productLadderList.length < 3) {
-          productLadderList.push({
-            count: 0,
-            discount: 0,
-            price: 0
-          })
-        } else {
-          this.$message({
-            message: '最多只能添加三条',
-            type: 'warning'
-          });
-        }
-      },
-      handleRemoveFullReduction(index, row) {
-        let fullReductionList = this.value.productFullReductionList;
-        if (fullReductionList.length === 1) {
-          fullReductionList.pop();
-          fullReductionList.push({
-            fullPrice: 0,
-            reducePrice: 0
-          });
-        } else {
-          fullReductionList.splice(index, 1);
-        }
-      },
-      handleAddFullReduction(index, row) {
-        let fullReductionList = this.value.productFullReductionList;
-        if (fullReductionList.length < 3) {
-          fullReductionList.push({
-            fullPrice: 0,
-            reducePrice: 0
-          });
-        } else {
-          this.$message({
-            message: '最多只能添加三条',
-            type: 'warning'
-          });
-        }
-      },
+
       handlePrev() {
         this.$emit('prevStep')
       },
@@ -270,7 +147,7 @@
 </script>
 
 <style scoped>
-  .littleMargin {
-    margin-top: 10px;
-  }
+  /*.littleMargin {*/
+  /*  margin-top: 10px;*/
+  /*}*/
 </style>

@@ -2,7 +2,7 @@
   <div style="margin-top: 50px">
     <el-form :model="value" :rules="rules" ref="productInfoForm" label-width="120px" style="width: 600px" size="small">
       <el-form-item label="项目名称：" prop="projectName">
-        <el-input v-model="value.projectName"></el-input>
+        <el-input v-model="value.projectName" />
       </el-form-item>
       <el-form-item label="项目类别：" prop="projectCataId">
         <el-cascader
@@ -43,11 +43,7 @@
         </el-rate>
       </el-form-item>
       <el-form-item label="项目介绍：">
-        <el-input
-          :autoSize="true"
-          v-model="value.projectDesc"
-          type="textarea"
-          placeholder="请输入内容"></el-input>
+        <el-input :autoSize="true" v-model="value.projectDesc" type="textarea" placeholder="请输入内容" />
       </el-form-item>
 
       <el-form-item style="text-align: center">
@@ -96,17 +92,17 @@
     },
     computed:{
       //商品的编号
-      productId(){
-        return this.value.id;
-      }
+      // productId(){
+      //   return this.value.id;
+      // }
     },
     watch: {
-      productId:function(newValue){
-        if(!this.isEdit)return;
-        if(this.hasEditCreated)return;
-        if(newValue===undefined||newValue==null||newValue===0)return;
-        this.handleEditCreated();
-      },
+      // productId:function(newValue){
+      //   if(!this.isEdit)return;
+      //   if(this.hasEditCreated)return;
+      //   if(newValue===undefined||newValue==null||newValue===0)return;
+      //   this.handleEditCreated();
+      // },
       selectProductCateValue: function (newValue) {
         if (newValue != null && newValue.length === 2) {
           this.value.projectCataId = newValue[1];
