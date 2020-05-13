@@ -18,6 +18,14 @@ export function getInfo() {
   })
 }
 
+
+export function listByDepartment() {
+  return request({
+    url: '/admin/listByDepartment',
+    method: 'get',
+  })
+}
+
 export function logout() {
   return request({
     url: '/admin/logout',
@@ -40,6 +48,9 @@ export function createAdmin(data) {
     data: data
   })
 }
+
+
+
 
 export function updateAdmin(id, data) {
   return request({

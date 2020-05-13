@@ -50,6 +50,7 @@
 <script>
   import {fetchListWithChildren} from '@/api/productCate'
   import {fetchList as fetchBrandList} from '@/api/brand'
+  import {listByDepartment} from '@/api/login'
 
   export default {
     name: "ProjectCloseDetail",
@@ -109,11 +110,11 @@
       },
 
       getBrandList() {
-        fetchBrandList({pageNum: 1, pageSize: 100}).then(response => {
+        listByDepartment().then(response => {
           this.brandOptions = [];
-          let brandList = response.data.list;
+          let brandList = response.data;
           for (let i = 0; i < brandList.length; i++) {
-            this.brandOptions.push({label: brandList[i].name, value: brandList[i].id});
+            this.brandOptions.push({label: brandList[i].username, value: brandList[i].id});
           }
         });
       },

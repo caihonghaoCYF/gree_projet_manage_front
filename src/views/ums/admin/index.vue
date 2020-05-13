@@ -45,6 +45,9 @@
         <el-table-column label="姓名" align="center">
           <template slot-scope="scope">{{scope.row.nickName}}</template>
         </el-table-column>
+        <el-table-column label="科室" align="center">
+          <template slot-scope="scope">{{scope.row.department}}</template>
+        </el-table-column>
         <el-table-column label="邮箱" align="center">
           <template slot-scope="scope">{{scope.row.email}}</template>
         </el-table-column>
@@ -108,6 +111,12 @@
         <el-form-item label="姓名：">
           <el-input v-model="admin.nickName" style="width: 250px"></el-input>
         </el-form-item>
+        <el-form-item label="科室：" prop="department">
+          <el-cascader
+            v-model="selectProductCateValue"
+            :options="productCateOptions">
+          </el-cascader>
+        </el-form-item>
         <el-form-item label="邮箱：">
           <el-input v-model="admin.email" style="width: 250px"></el-input>
         </el-form-item>
@@ -155,7 +164,7 @@
   import {fetchList,createAdmin,updateAdmin,updateStatus,deleteAdmin,getRoleByAdmin,allocRole} from '@/api/login';
   import {fetchAllRoleList} from '@/api/role';
   import {formatDate} from '@/utils/date';
-
+  import {fetchListWithChildren} from '@/api/productCate'
   const defaultListQuery = {
     pageNum: 1,
     pageSize: 10,
@@ -166,6 +175,8 @@
     username: null,
     password: null,
     nickName: null,
+    department: null,
+    departmentId: null,
     email: null,
     note: null,
     status: 1
@@ -184,12 +195,27 @@
         allocDialogVisible: false,
         allocRoleIds:[],
         allRoleList:[],
-        allocAdminId:null
+        allocAdminId:null,
+        selectProductCateValue: [],
+        productCateOptions: [],
+        hasEditCreated:false,
       }
     },
     created() {
       this.getList();
       this.getAllRoleList();
+      this.getProductCateList();
+    },
+    watch:{
+      selectProductCateValue: function (newValue) {
+        if (newValue != null && newValue.length === 2) {
+          this.admin.departmentId = newValue[1];
+          this.admin.department = this.getCateNameById(this.admin.departmentId);
+        } else {
+          this.admin.departmentId = null;
+          this.admin.department=null;
+        }
+      }
     },
     filters: {
       formatDateTime(time) {
@@ -212,6 +238,40 @@
         this.listQuery.pageNum = 1;
         this.listQuery.pageSize = val;
         this.getList();
+      },
+      getCateNameById(id){
+        let name=null;
+        for(let i=0;i<this.productCateOptions.length;i++){
+          for(let j=0;j<this.productCateOptions[i].children.length;j++){
+            if(this.productCateOptions[i].children[j].value===id){
+              name=this.productCateOptions[i].children[j].label;
+              return name;
+            }
+          }
+        }
+        return name;
+      },
+      getProductCateList() {
+        fetchListWithChildren().then(response => {
+          let list = response.data;
+          this.productCateOptions = [];
+          for (let i = 0; i < list.length; i++) {
+            let children = [];
+            if (list[i].children != null && list[i].children.length > 0) {
+              for (let j = 0; j < list[i].children.length; j++) {
+                children.push({label: list[i].children[j].name, value: list[i].children[j].id});
+              }
+            }
+            this.productCateOptions.push({label: list[i].name, value: list[i].id, children: children});
+          }
+        });
+      },
+      handleEditCreated(){
+        if(this.departmentId!=null){
+          this.selectProductCateValue.push(this.admin.cateParentId);
+          this.selectProductCateValue.push(this.admin.departmentId);
+        }
+        this.hasEditCreated=true;
       },
       handleCurrentChange(val) {
         this.listQuery.pageNum = val;
@@ -263,6 +323,7 @@
         this.admin = Object.assign({},row);
       },
       handleDialogConfirm() {
+        console.log(this.admin);
         this.$confirm('是否要确认?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -275,6 +336,8 @@
                 type: 'success'
               });
               this.dialogVisible =false;
+              this.department = null;
+              this.departmentId = null;
               this.getList();
             })
           } else {
@@ -284,6 +347,8 @@
                 type: 'success'
               });
               this.dialogVisible =false;
+              this.department = null;
+              this.departmentId = null;
               this.getList();
             })
           }

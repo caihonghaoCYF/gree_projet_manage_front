@@ -62,9 +62,8 @@
 </template>
 
 <script>
-  import {fetchList as fetchMemberLevelList} from '@/api/memberLevel'
   import Tinymce from '@/components/Tinymce'
-  import {fetchList as fetchBrandList} from '@/api/brand'
+  import {listByDepartment} from '@/api/login'
   export default {
     name: "ProjectPlanDetail",
     components: {Tinymce},
@@ -88,28 +87,16 @@
       }
     },
     created() {
-      if (this.isEdit) {
-        // this.handleEditCreated();
-      } else {
-        fetchMemberLevelList({defaultStatus: 0}).then(response => {
-          let memberPriceList = [];
-          for (let i = 0; i < response.data.length; i++) {
-            let item = response.data[i];
-            memberPriceList.push({memberLevelId: item.id, memberLevelName: item.name})
-          }
-          this.value.memberPriceList = memberPriceList;
-        });
-      }
       this.getBrandList();
     },
     computed: {},
     methods: {
       getBrandList() {
-        fetchBrandList({pageNum: 1, pageSize: 100}).then(response => {
+        listByDepartment().then(response => {
           this.brandOptions = [];
-          let brandList = response.data.list;
+          let brandList = response.data;
           for (let i = 0; i < brandList.length; i++) {
-            this.brandOptions.push({label: brandList[i].name, value: brandList[i].id});
+            this.brandOptions.push({label: brandList[i].username, value: brandList[i].id});
           }
         });
       },
@@ -133,7 +120,7 @@
             break;
           }
         }
-        this.value.brandName = brandName;
+        // this.value.brandName = brandName;
       },
 
       handlePrev() {

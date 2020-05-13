@@ -21,20 +21,17 @@
       <div style="margin-top: 15px">
         <el-form :inline="true" :model="listQuery" size="small" label-width="140px">
           <el-form-item label="输入搜索：">
-            <el-input style="width: 203px" v-model="listQuery.keyword" placeholder="商品名称"></el-input>
+            <el-input style="width: 203px" v-model="listQuery.projectName" placeholder="项目名称"></el-input>
           </el-form-item>
-          <el-form-item label="商品货号：">
-            <el-input style="width: 203px" v-model="listQuery.productSn" placeholder="商品货号"></el-input>
-          </el-form-item>
-          <el-form-item label="商品分类：">
+          <el-form-item label="部门科室：">
             <el-cascader
               clearable
               v-model="selectProductCateValue"
               :options="productCateOptions">
             </el-cascader>
           </el-form-item>
-          <el-form-item label="商品品牌：">
-            <el-select v-model="listQuery.brandId" placeholder="请选择品牌" clearable>
+          <el-form-item label="负责人：">
+            <el-select v-model="listQuery.projectMainMan" placeholder="请选择负责人" clearable>
               <el-option
                 v-for="item in brandOptions"
                 :key="item.value"
@@ -87,71 +84,63 @@
         <el-table-column label="编号" width="100" align="center">
           <template slot-scope="scope">{{scope.row.id}}</template>
         </el-table-column>
-        <el-table-column label="商品图片" width="120" align="center">
-          <template slot-scope="scope"><img style="height: 80px" :src="scope.row.pic"></template>
-        </el-table-column>
-        <el-table-column label="商品名称" align="center">
+        <el-table-column label="项目名称" width="120" align="center">
           <template slot-scope="scope">
-            <p>{{scope.row.name}}</p>
-            <p>品牌：{{scope.row.brandName}}</p>
+            <p>{{scope.row.projectName}}</p>
           </template>
         </el-table-column>
-        <el-table-column label="价格/货号" width="120" align="center">
+        <el-table-column label="所属科室" align="center">
           <template slot-scope="scope">
-            <p>价格：￥{{scope.row.price}}</p>
-            <p>货号：{{scope.row.productSn}}</p>
+            <p>{{scope.row.projectCataName}}</p>
+          </template>
+        </el-table-column>
+        <el-table-column label="负责人" align="center">
+          <template slot-scope="scope">
+            <p>{{scope.row.projectMainMan}}</p>
+          </template>
+        </el-table-column>
+        <el-table-column label="项目成员" align="center">
+          <template slot-scope="scope">
+            <p>{{scope.row.joinMan}}</p>
+          </template>
+        </el-table-column>
+        <el-table-column label="项目介绍" align="center">
+          <template slot-scope="scope">
+            <p>{{scope.row.projectDesc}}</p>
+          </template>
+        </el-table-column>
+        <el-table-column label="是否关闭" width="120" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.projectIsClose === true? 'success': 'info'">{{scope.row.projectIsClose === true? "已关闭":"未关闭"}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="标签" width="140" align="center">
           <template slot-scope="scope">
-            <p>上架：
-              <el-switch
-                @change="handlePublishStatusChange(scope.$index, scope.row)"
-                :active-value="1"
-                :inactive-value="0"
-                v-model="scope.row.publishStatus">
-              </el-switch>
-            </p>
-            <p>新品：
-              <el-switch
-                @change="handleNewStatusChange(scope.$index, scope.row)"
-                :active-value="1"
-                :inactive-value="0"
-                v-model="scope.row.newStatus">
-              </el-switch>
-            </p>
-            <p>推荐：
-              <el-switch
-                @change="handleRecommendStatusChange(scope.$index, scope.row)"
-                :active-value="1"
-                :inactive-value="0"
-                v-model="scope.row.recommandStatus">
-              </el-switch>
-            </p>
+            <el-rate v-model="scope.row.important"></el-rate>
           </template>
         </el-table-column>
-        <el-table-column label="排序" width="100" align="center">
-          <template slot-scope="scope">{{scope.row.sort}}</template>
-        </el-table-column>
-        <el-table-column label="SKU库存" width="100" align="center">
-          <template slot-scope="scope">
-            <el-button type="primary" icon="el-icon-edit" @click="handleShowSkuEditDialog(scope.$index, scope.row)" circle></el-button>
-          </template>
-        </el-table-column>
-        <el-table-column label="销量" width="100" align="center">
-          <template slot-scope="scope">{{scope.row.sale}}</template>
-        </el-table-column>
-        <el-table-column label="审核状态" width="100" align="center">
-          <template slot-scope="scope">
-            <p>{{scope.row.verifyStatus | verifyStatusFilter}}</p>
-            <p>
-              <el-button
-                type="text"
-                @click="handleShowVerifyDetail(scope.$index, scope.row)">审核详情
-              </el-button>
-            </p>
-          </template>
-        </el-table-column>
+<!--        <el-table-column label="排序" width="100" align="center">-->
+<!--          <template slot-scope="scope">{{scope.row.sort}}</template>-->
+<!--        </el-table-column>-->
+<!--        <el-table-column label="SKU库存" width="100" align="center">-->
+<!--          <template slot-scope="scope">-->
+<!--            <el-button type="primary" icon="el-icon-edit" @click="handleShowSkuEditDialog(scope.$index, scope.row)" circle></el-button>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+<!--        <el-table-column label="销量" width="100" align="center">-->
+<!--          <template slot-scope="scope">{{scope.row.sale}}</template>-->
+<!--        </el-table-column>-->
+<!--        <el-table-column label="审核状态" width="100" align="center">-->
+<!--          <template slot-scope="scope">-->
+<!--            <p>{{scope.row.verifyStatus | verifyStatusFilter}}</p>-->
+<!--            <p>-->
+<!--              <el-button-->
+<!--                type="text"-->
+<!--                @click="handleShowVerifyDetail(scope.$index, scope.row)">审核详情-->
+<!--              </el-button>-->
+<!--            </p>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
         <el-table-column label="操作" width="160" align="center">
           <template slot-scope="scope">
             <p>
@@ -283,19 +272,17 @@
   import {fetchList as fetchProductAttrList} from '@/api/productAttr'
   import {fetchList as fetchBrandList} from '@/api/brand'
   import {fetchListWithChildren} from '@/api/productCate'
+  import { projectFetchList} from '@/api/ProjectManage'
 
   const defaultListQuery = {
-    keyword: null,
+    projectName: null, //项目名称
+    projectCataId: null, //科室不是分类ID
+    projectMainMan: null, //项目负责人
     pageNum: 1,
     pageSize: 5,
-    publishStatus: null,
-    verifyStatus: null,
-    productSn: null,
-    productCategoryId: null,
-    brandId: null
   };
   export default {
-    name: "productList",
+    name: "projectList",
     data() {
       return {
         editSkuInfo:{
@@ -374,9 +361,9 @@
     watch: {
       selectProductCateValue: function (newValue) {
         if (newValue != null && newValue.length == 2) {
-          this.listQuery.productCategoryId = newValue[1];
+          this.listQuery.projectCataId = newValue[1];
         } else {
-          this.listQuery.productCategoryId = null;
+          this.listQuery.projectCataId = null;
         }
 
       }
@@ -401,7 +388,8 @@
       },
       getList() {
         this.listLoading = true;
-        fetchList(this.listQuery).then(response => {
+        projectFetchList(this.listQuery).then(response => {
+          console.log(response);
           this.listLoading = false;
           this.list = response.data.list;
           this.total = response.data.total;

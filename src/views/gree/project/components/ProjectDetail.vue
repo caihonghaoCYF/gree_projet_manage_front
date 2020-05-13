@@ -33,24 +33,24 @@
   import ProjectPlanDetail from './ProjectPlanDetail';
   import ProjectCloseDetail from './ProjectCloseDetail';
   import {createProduct,getProduct,updateProduct} from '@/api/product';
+  import {createProjectManage} from '@/api/ProjectManage';
 
   const defaultProductParam = {
     //项目信息
-    projectName: '',//项目名称
-    projectCataId:'',//项目分类ID
-    projectCataName:'',//项目分类名字
-    projectMainMan: '', //项目负责人
-    joinMan: '', //项目成员
-    important: 0, //项目重要程度
-    projectDesc: '', //项目介绍
+    projectInfo:{
+      projectName: '',//项目名称
+      projectCataId:'',//项目分类ID
+      projectCataName:'',//项目分类名字
+      projectMainMan: '', //项目负责人
+      projectMainManId: '', //项目负责人ID
+      joinMan: '', //项目成员
+      joinManId: '', //项目成员IDS
+      important: 0, //项目重要程度
+      projectDesc: '', //项目介绍
+    },
     //计划信息
     planList: [],
-    planName: '',//计划名称
-    planOperate: '',//操作人
-    planFinishTime: '',//计划完成时间
-    planDoc: '',//计划文档
-    planDesc: '',//计划详情,
-
+    //项目完结信息
     projectCloseInfo:{
       projectCloseName:'',//完结人
       projectIsClose:'',//是否完结
@@ -58,11 +58,6 @@
       finishTime: '', //项目完成时间
     },
 
-    //项目完结信息
-    projectCloseName:'',//完结人
-    projectIsClose:'',//是否完结
-    closeStatus:'', //完结状态
-    finishTime: '', //项目完成时间
   };
   export default {
     name: 'ProjectDetail',
@@ -128,7 +123,7 @@
               this.$router.back();
             });
           }else{
-            createProduct(this.productParam).then(response=>{
+            createProjectManage(this.productParam).then(response=>{
               this.$message({
                 type: 'success',
                 message: '提交成功',
